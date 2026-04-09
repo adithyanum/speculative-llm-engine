@@ -1,0 +1,9 @@
+psc_speculator/
+__pycache__/
+.env
+*.pyd
+*.pyc
+*.pyo
+*.log
+.DS_Store
+venv/
