@@ -1,5 +1,35 @@
 [
     {
+        "response": " The person who discovered penicillin is Alexander Fleming. He was a British scientist who worked at the University of Cambridge in England during World War I, where he developed an interest in bacteria and their causes of infection.\n\nFleming noticed that a mold that had been growing on the covers of his books (which were contaminated with the spores of a type of fungus) had started to grow inside the book when it was opened. He later found that this mold was actually a type of bacteria called Penicillium notatum.\n\nFleming was fascinated by the discovery and quickly realized that this mold could be used as a treatment for bacterial infections. This led to him developing the first antibiotic, which is still widely used today to treat bacterial infections caused by bacteria like Streptococcus pneumoniae.\n\nPenicillin has since become one of the most important antibiotics of all time, playing a crucial role in preventing many bacterial diseases and saving countless lives. It's worth noting that while Fleming was the discoverer, his work did not receive the same level of recognition or fame as other scientists like Alexander Fleming or Louis Pasteur, who also made significant contributions to the field of microbiology. However, Fleming's discovery of penicillin was pivotal in shaping modern medicine and remains one of the most famous scientific discoveries of all time.",
+        "latency": 10.99627161026001,
+        "tokens_generated": 266,
+        "tokens_per_sec": 24.19001725564965,
+        "prompt": "Who discovered penicillin?",
+        "mode": "baseline",
+        "timestamp": "2026-04-12T08:41:51.227049",
+        "model": "Qwen2.5-0.5B"
+    },
+    {
+        "response": ", then write a program to implement it. Binary search is an efficient algorithm for finding the position of a target value within a sorted array. The time complexity is O(log n), where n is the number of elements in the array.\n\nTo implement binary search:\n\n1. Define a function that takes two parameters: the array and the target value.\n2. Initialize three variables: low (initially 0) and high (initially len(array)).\n3. While low is less than or equal to high:\n   - Calculate mid as the average of low and high.\n   - If the target value is found at index mid, return mid.\n   - If the target value is greater than the value at index mid, set high to mid-1.\n   - Otherwise, set low to mid+1.\n4. Return -1 if the target value is not found.\n\nHere's the Python code implementing binary search:\n\n```python\ndef binary_search(arr, target):\n    low = 0\n    high = len(arr) - 1\n    \n    while low <= high:\n        mid = (low + high) // 2\n        \n        # Check if target is present at mid\n        if arr[mid] == target:\n            return mid\n        \n        # If target is smaller than mid, it can only be present in left subarray\n        elif arr[mid] > target:\n            high = mid - 1\n        \n        # If target is larger than mid, it must be present in right",
+        "latency": 11.445631265640259,
+        "tokens_generated": 300,
+        "tokens_per_sec": 26.210874091374833,
+        "prompt": "Explain binary search in simple terms",
+        "mode": "baseline",
+        "timestamp": "2026-04-12T08:42:02.673923",
+        "model": "Qwen2.5-0.5B"
+    },
+    {
+        "response": "? In English, Stack is a linear data structure that follows the Last In First Out (LIFO) principle. Queue on the other hand is a linear data structure that follows the First In First Out (FIFO) principle.\n\nIn terms of memory usage, a stack has a maximum capacity of N elements and can be filled to its full capacity before it runs out of space. A queue can hold up to Q elements but will only fill to its max capacity if there are more than 0 elements available for it.\n\nStacks are useful when we need to add or remove an element from topmost position. For example, we may want to add new information to the front of a queue to perform some operation. Queues are useful when we need to add or remove an element at any position in the queue.\n\nStacks have a time complexity of O(1) for push and pop operations while queues have a time complexity of O(n) where n is the number of elements in the queue.\nQueue has a time complexity of O(1) for enqueue and dequeue operations while stacks have a time complexity of O(1) for push and pop operations.\nSo, the main difference between a stack and a queue is their time complexity. However, both these structures provide us with different functionalities depending upon our requirement. Stack provides us with the ability to push and pop elements at the topmost position whereas queue provides us with the ability to insert and delete elements from either end of the queue. \nI",
+        "latency": 11.736727476119995,
+        "tokens_generated": 300,
+        "tokens_per_sec": 25.560787758801737,
+        "prompt": "Explain stack vs queue in Malayalam",
+        "mode": "baseline",
+        "timestamp": "2026-04-12T08:42:14.411816",
+        "model": "Qwen2.5-0.5B"
+    },
+    {
         "response": " A. Fleming B. Pasteur C. Leeuwenhoek D. Koch\n\nA. Alexander Fleming discovered penicillin in 1928. He noticed that a mold called Penicillium notatum had killed bacteria in a petri dish, leading to the development of the first true antibiotic. Therefore, the correct answer is A. Fleming. The other scientists mentioned are known for different discoveries: Pasteur for pasteurization and germ theory, Leeuwenhoek for developing the microscope, and Koch for the germ theory of disease and the identification of the tuberculosis and anthrax bacteria. Answer A is correct.",
         "latency": 86.4514889717102,
         "tokens_generated": 129,
