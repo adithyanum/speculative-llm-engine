@@ -2,7 +2,7 @@ from models.loader import ModelLoader
 from engine.draft import generate_response
 from metrics.logger import MetricsLogger
 
-MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
+MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
 
 prompts = [
     "Who discovered penicillin?",
