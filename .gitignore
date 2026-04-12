@@ -1,4 +1,4 @@
-psc_speculator/
+specdecode_ai/
 __pycache__/
 .env
 *.pyd

@@ -1,4 +1,4 @@
-# 🚀 PSC Speculator
+# 🚀 SpecDecode-AI
 
 Speculative Decoding Inference Engine for Multilingual QA Systems
 
