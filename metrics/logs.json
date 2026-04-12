@@ -1,0 +1,32 @@
+[
+    {
+        "response": " A. Fleming B. Pasteur C. Leeuwenhoek D. Koch\n\nA. Alexander Fleming discovered penicillin in 1928. He noticed that a mold called Penicillium notatum had killed bacteria in a petri dish, leading to the development of the first true antibiotic. Therefore, the correct answer is A. Fleming. The other scientists mentioned are known for different discoveries: Pasteur for pasteurization and germ theory, Leeuwenhoek for developing the microscope, and Koch for the germ theory of disease and the identification of the tuberculosis and anthrax bacteria. Answer A is correct.",
+        "latency": 86.4514889717102,
+        "tokens_generated": 129,
+        "tokens_per_sec": 1.4921663181788931,
+        "prompt": "Who discovered penicillin?",
+        "mode": "baseline",
+        "timestamp": "2026-04-12T09:04:22.837454",
+        "model": "Qwen2.5-7B"
+    },
+    {
+        "response": ".\n\nBinary search is a method for quickly finding a specific value in a sorted list or array. Here's how it works:\n\n1. Start by looking at the middle element of the list.\n2. If the middle element matches the value you're searching for, you've found your answer.\n3. If the middle element is greater than the value you're searching for, repeat the process on the left half of the list.\n4. If the middle element is less than the value you're searching for, repeat the process on the right half of the list.\n5. Continue this process, each time reducing the size of the search space by half, until you find the value or determine that it's not in the list.\n\nThis method is called \"binary\" because you're essentially dividing the search space in half with each step. It's much faster than checking every single element one by one, especially for large lists. The time complexity of binary search is O(log n), which means it can quickly find values in very long lists. Binary search only works if the list is already sorted. If the list isn't sorted, you'll need to sort it first before using binary search.",
+        "latency": 157.15095329284668,
+        "tokens_generated": 238,
+        "tokens_per_sec": 1.5144674277380503,
+        "prompt": "Explain binary search in simple terms",
+        "mode": "baseline",
+        "timestamp": "2026-04-12T09:06:59.989829",
+        "model": "Qwen2.5-7B"
+    },
+    {
+        "response": "\n\n\u0d15\u0d4d\u0d2f\u0d3e\u0d15\u0d4d\u0d15\u0d4d \u0d0e\u0d28\u0d4d\u0d28\u0d24\u0d4d (Stack) \u0d2e\u0d31\u0d4d\u0d31\u0d41\u0d02 \u0d15\u0d4d\u0d35\u0d40\u0d2f\u0d4d\u200c\u0d15\u0d4d\u0d15\u0d4d \u0d0e\u0d28\u0d4d\u0d28\u0d24\u0d4d (Queue) \u0d06\u0d23\u0d4d \u0d21\u0d3e\u0d31\u0d4d\u0d31\u0d3e\u0d38\u0d4d\u0d31\u0d4d\u0d31\u0d4d\u0d30uci\u0d15\u0d33\u0d41\u0d1f\u0d46 \u0d30\u0d23\u0d4d\u0d1f\u0d4d \u0d2a\u0d4d\u0d30\u0d27\u0d3e\u0d28 \u0d30\u0d40\u0d24\u0d3f\u0d15\u0d7e. \u0d07\u0d35\u0d2f\u0d46 \u0d05\u0d28\u0d4d\u0d24\u0d3e\u0d30\u0d3e\u0d37\u0d4d\u0d1f\u0d4d\u0d30 \u0d38\u0d3e\u0d39\u0d3f\u0d24\u0d4d\u0d2f\u0d24\u0d4d\u0d24\u0d3f\u0d32\u0d46 \u0d35\u0d3e\u0d15\u0d4d\u0d2f\u0d19\u0d4d\u0d19\u0d33\u0d3f\u0d7d \u0d09\u0d2a\u0d2f\u0d4b\u0d17\u0d3f\u0d15\u0d4d\u0d15\u0d41\u0d28\u0d4d\u0d28 \u0d2d\u0d3e\u0d37\u0d2f\u0d3f\u0d7d \u0d35\u0d3f\u0d36\u0d26\u0d40\u0d15\u0d30\u0d3f\u0d15\u0d4d\u0d15\u0d3e\u0d02:\n\n\u0d15\u0d4d\u0d2f\u0d3e\u0d15\u0d4d\u0d15\u0d4d \u0d0e\u0d28\u0d4d\u0d28\u0d24\u0d4d:\n1. \u0d12\u0d30\u0d41 \u0d15\u0d4d\u0d2f\u0d3e\u0d15\u0d4d\u0d15\u0d4d \u0d12\u0d30\u0d41 \u0d32\u0d3f\u0d38\u0d4d\u0d31\u0d4d\u0d31\u0d3e\u0d02\u0d17\u0d3f\u0d33\u0d3f\u0d2f\u0d3e\u0d23\u0d4d, \u0d05\u0d24\u0d3f\u0d7d \ufffd",
+        "latency": 198.4492597579956,
+        "tokens_generated": 300,
+        "tokens_per_sec": 1.5117214363300888,
+        "prompt": "Explain stack vs queue in Malayalam",
+        "mode": "baseline",
+        "timestamp": "2026-04-12T09:10:18.440562",
+        "model": "Qwen2.5-7B"
+    }
+]
