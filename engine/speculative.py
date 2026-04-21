@@ -25,6 +25,8 @@ def speculative_decode(draft_model, target_model, tokenizer,
     Draft model generates k tokens, target model verifies in one forward pass.
     Acceptance/rejection preserves target model output distribution exactly.
     """
+
+    device = next(target_model.parameters()).device
     input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(target_model.device)
 
     generated_tokens = 0
