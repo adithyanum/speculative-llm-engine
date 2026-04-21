@@ -5,6 +5,8 @@ import time
 
 def _get_probs(logits, token_id):
     """Get probability of a specific token from logits"""
+    if token_id >= logits.shape[-1]:
+        return 1e-8  # token doesn't exist in this vocab, treat as near zero
     probs = F.softmax(logits, dim=-1)
     return probs[token_id].item()
 
