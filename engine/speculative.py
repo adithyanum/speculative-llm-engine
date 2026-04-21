@@ -11,6 +11,11 @@ def _get_probs(logits, token_id):
 
 def _resample(p_logits, q_logits):
     """Sample from max(0, p-q) normalized — the corrected distribution"""
+   
+    min_vocab = min(p_logits.shape[-1], q_logits.shape[-1])
+    p_logits = p_logits[:min_vocab]
+    q_logits = q_logits[:min_vocab]
+    
     p_probs = F.softmax(p_logits, dim=-1)
     q_probs = F.softmax(q_logits, dim=-1)
     corrected = torch.clamp(p_probs - q_probs, min=0)
