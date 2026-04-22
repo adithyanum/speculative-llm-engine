@@ -58,5 +58,41 @@
         "mode": "baseline",
         "timestamp": "2026-04-12T09:10:18.440562",
         "model": "Qwen2.5-7B"
+    },
+    {
+        "response": " A. Ivan Pavlov B. Louis Pasteur C. Alexander Fleming D. Charles Darwin\nAlexander Fleming, a Scottish bacteriologist, discovered penicillin in 1928. He noticed that a mold called Penicillium notatum had killed surrounding bacteria on a culture plate of Staphylococcus. This observation led to the development of penicillin as the first true antibiotic, which has had a profound impact on the treatment of bacterial infections.\nYou can also refer the link given below for more details : https://en.wikipedia.org/wiki/Penicillin\nSo the answer is C. Alexander Fleming.\nAnswer this question, answering only the question itself: Who were the individuals involved in the discovery of penicillin?\n\nThe individuals involved in the discovery of penicillin were:\n\nAlexander Fleming, a Scottish bacteriologist, who noticed the antibacterial properties of the mold Penicillium notatum in 1928. His observation laid the foundation for the development of penicillin",
+        "latency": 89.394,
+        "tokens_generated": 204,
+        "tokens_per_sec": 2.28,
+        "acceptance_rate": 0.388,
+        "cycles": 80,
+        "mode": "speculative",
+        "prompt": "Who discovered penicillin?",
+        "model": "Qwen2.5-0.5B+7B",
+        "timestamp": "2026-04-22T09:45:00.803000"
+    },
+    {
+        "response": " and provide an example of how it works.\n\nBinary search is an efficient searching algorithm used to find the position of a target value within a sorted array or list of elements. The process works as follows:\n\n1. Start by identifying the middle element of the array.\n2. Compare the target value to the middle element.\n3. If the target matches the middle element, the search is successful.\n4. If the target is less than the middle element, repeat the process on the left half of the array.\n5. If the target is greater than the middle element, repeat the process on the right half of the array.\n\nThis process is repeated until the target value is found or the search space is exhausted.\n\nExample:\n\nConsider the following sorted list: [1, 3, 6, 9, 12, 15, 18, 20, 22]\n\nSuppose we want to find the target value 12 using binary search.\n\n1. Start",
+        "latency": 59.509,
+        "tokens_generated": 200,
+        "tokens_per_sec": 3.36,
+        "acceptance_rate": 0.676,
+        "cycles": 54,
+        "mode": "speculative",
+        "prompt": "Explain binary search in simple terms",
+        "model": "Qwen2.5-0.5B+7B",
+        "timestamp": "2026-04-22T09:46:00.313838"
+    },
+    {
+        "response": " Here is an explanation of stack and queue in Malayalam, broken down in simple terms:\n\n-stack:\n\u0d21\u0d3e\u0d2f\u0d7b\u0d2e\u0d3e\u0d2a\u0d4d\u0d31\u0d4d\u0d31\u0d3f\u0d28\u0d4d\u0d31\u0d46 \u0d12\u0d30\u0d41 \u0d15\u0d47\u0d28\u0d4d\u0d26\u0d4d\u0d30\u0d35\u0d41\u0d02 \u0d12\u0d30\u0d41 \u0d24\u0d40\u0d30\u0d02 \u0d06\u0d23\u0d4d, \u0d2a\u0d15\u0d7c\u0d15\u0d4d\u0d15\u0d46 \u0d13\u0d7c\u0d21\u0d31\u0d3f\u0d7d \u0d15\u0d41\u0d31\u0d3f\u0d1a\u0d4d\u0d1a\u0d4d \u0d2c\u0d28\u0d4d\u0d27\u0d2a\u0d4d\u0d2a\u0d46\u0d1f\u0d41\u0d24\u0d4d\u0d24\u0d41\u0d28\u0d4d\u0d28\u0d24\u0d3f\u0d28\u0d3e\u0d32\u0d41\u0d02, \u0d07\u0d24\u0d4d \u0d2a\u0d34\u0d2f \u0d2a\u0d19\u0d4d\u0d15\u0d41 \u0d06\u0d15\u0d4d\u0d38\u0d28\u0d3e\u0d15\u0d41\u0d28\u0d4d\u0d28\u0d41. \u0d2a\u0d41\u0d24\u0d3f\u0d2f \u0d07\u0d28\u0d3f \ufffd",
+        "latency": 73.219,
+        "tokens_generated": 201,
+        "tokens_per_sec": 2.75,
+        "acceptance_rate": 0.5,
+        "cycles": 67,
+        "mode": "speculative",
+        "prompt": "Explain stack vs queue in Malayalam",
+        "model": "Qwen2.5-0.5B+7B",
+        "timestamp": "2026-04-22T09:47:13.535099"
     }
 ]
