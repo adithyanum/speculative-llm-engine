@@ -36,37 +36,28 @@ metrics_logger = MetricsLogger()
 # ── Lifespan: load models on startup, cleanup on shutdown ─────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Loading models...")
-
-    try:
-        # Load draft model (0.5B — fast)
-        draft_loader = ModelLoader(DRAFT_MODEL_NAME)
-        state["draft_model"], state["tokenizer"] = draft_loader.load()
-
-        # Load target model (7B — quality)
-        target_loader = ModelLoader(TARGET_MODEL_NAME)
-        state["target_model"], _ = target_loader.load()   # tokenizer already loaded
-
-        state["device"] = draft_loader.get_device()
-        state["models_loaded"] = True
-
-        logger.info(f"Both models loaded on {state['device']}")
-
-    except Exception as e:
-        logger.error(f"Model loading failed: {e}")
-        # Server still starts — /health will report models_loaded: false
-
-    yield  # server runs here
-
-    # Cleanup on shutdown
-    logger.info("Shutting down — freeing GPU memory")
+    if not state["models_loaded"]:
+        logger.info("Loading models via lifespan...")
+        try:
+            draft_loader = ModelLoader(DRAFT_MODEL_NAME)
+            state["draft_model"], state["tokenizer"] = draft_loader.load()
+            target_loader = ModelLoader(TARGET_MODEL_NAME)
+            state["target_model"], _ = target_loader.load()
+            state["device"] = draft_loader.get_device()
+            state["models_loaded"] = True
+            logger.info(f"Models loaded on {state['device']}")
+        except Exception as e:
+            logger.error(f"Model loading failed: {e}")
+    else:
+        logger.info("✅ Models pre-loaded — skipping lifespan load")
+    yield
+    logger.info("Shutting down...")
     if state["draft_model"] is not None:
         del state["draft_model"]
     if state["target_model"] is not None:
         del state["target_model"]
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
-
 
 # ── App init ───────────────────────────────────────────────────────────────────
 app = FastAPI(
