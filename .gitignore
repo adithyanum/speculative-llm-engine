@@ -1,6 +1,6 @@
 specdecode_ai/
 __pycache__/
-.env
+*.env
 *.pyd
 *.pyc
 *.pyo

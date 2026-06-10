@@ -40,7 +40,8 @@ class GenerateRequest(BaseModel):
     prompt: str = Field(..., min_length=1)
     max_new_tokens: Optional[int] = Field(default=200, ge=1, le=1000)
     mode: Optional[str] = Field(default="speculative", pattern="^(speculative|baseline)$")
-
+    log: Optional[bool] = Field(default=False)
+    
 class GenerateResponse(BaseModel):
     response: str
     mode: str
@@ -99,7 +100,10 @@ def generate(req: GenerateRequest):
             result["cycles"] = None
             model_label = "Qwen2.5-7B"
 
-        metrics_logger.log({**result, "prompt": req.prompt, "model": model_label})
+        if req.log:
+            metrics_logger.log({**result, "prompt": req.prompt, "model": model_label})
+
+            
         return GenerateResponse(
             response=result["response"], mode=result["mode"],
             tokens_generated=result["tokens_generated"],
