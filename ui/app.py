@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from concurrent.futures import ThreadPoolExecutor
 import os
+import html
 from dotenv import load_dotenv
 
 load_dotenv("SpecDec.env")
@@ -64,6 +65,20 @@ st.markdown("""
 [data-testid="stSidebar"] {
     background-color: #060810;
     border-right: 1px solid var(--border);
+    min-width: 240px !important;
+    max-width: 280px !important;
+}
+
+/* Prevent auto-collapse on medium-width viewports */
+[data-testid="stSidebar"][aria-expanded="false"] {
+    margin-left: 0 !important;
+    transform: none !important;
+    display: block !important;
+}
+
+/* Always show the toggle button */
+[data-testid="collapsedControl"] {
+    display: flex !important;
 }
 [data-testid="stSidebar"] .stMarkdown p,
 [data-testid="stSidebar"] .stMarkdown h3 {
@@ -314,6 +329,20 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
 .stAlert { font-family: var(--mono) !important; font-size: 12px !important; }
 .stSpinner > div { border-top-color: var(--accent) !important; }
 hr { border-color: var(--border) !important; }
+
+/* Only visible when sidebar is actually collapsed */
+.sidebar-nudge {
+    display: none;
+    font-size: 10px;
+    color: #1e3a50;
+    font-family: var(--mono);
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+}
+[data-testid="stSidebar"][aria-expanded="false"] ~ * .sidebar-nudge,
+[data-testid="collapsedControl"]:not([style*="display: none"]) ~ * .sidebar-nudge {
+    display: block;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -340,13 +369,15 @@ def check_health(url):
         return None
 
 def call_generate(url, prompt, mode, max_tokens):
-    # timeout=120 — T4 generation can legitimately take 60-90s
     try:
         r = requests.post(
             f"{url}/generate",
             json={"prompt": prompt, "mode": mode, "max_new_tokens": max_tokens},
-            timeout=120,
+            timeout=600,
         )
+        ct = r.headers.get("content-type", "")
+        if "application/json" not in ct:
+            return {"error": f"HTTP {r.status_code} — non-JSON response (proxy timeout or gateway error):\n{r.text[:200]}"}
         if r.status_code == 200:
             return r.json()
         return {"error": r.json().get("detail", f"HTTP {r.status_code}")}
@@ -359,31 +390,12 @@ def call_generate(url, prompt, mode, max_tokens):
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 def render_sidebar():
+
     with st.sidebar:
-        st.markdown("""
-        <div style="padding:1.2rem 0 1rem">
-            <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;
-                        color:#eef4ff;letter-spacing:-0.02em;line-height:1">
-                Spec<span style="color:#00d4aa">Decode</span>
-            </div>
-            <div style="font-size:9px;color:#132030;letter-spacing:0.07em;
-                        text-transform:uppercase;margin-top:5px;font-family:'JetBrains Mono',monospace">
-                inference engine · v2.0
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.divider()
+       
+        st.session_state["backend_url"] = DEFAULT_BACKEND
 
-        # Backend URL — persisted in session_state across reruns
-        st.markdown('<div class="sb-label">Backend URL</div>', unsafe_allow_html=True)
-        url = st.text_input(
-            label="url",
-            value=st.session_state.get("backend_url", DEFAULT_BACKEND),
-            label_visibility="collapsed",
-        )
-        st.session_state["backend_url"] = url
-
-        health = check_health(url)
+        health = check_health(DEFAULT_BACKEND)
         if health and health.get("models_loaded"):
             st.success(f"● connected · {health.get('device', '?')}")
         elif health:
@@ -395,13 +407,20 @@ def render_sidebar():
 
         # Mode — format_func maps clean API string → display label
         st.markdown('<div class="sb-label">Mode</div>', unsafe_allow_html=True)
+        
         mode = st.radio(
             label="mode",
-            options=["speculative", "baseline", "compare"],
+            options=[
+                "speculative",
+                "baseline",
+                "compare",
+                "benchmark"
+                    ],
             format_func=lambda x: {
-                "speculative": "⚡  Speculative",
-                "baseline":    "▤  Baseline (7B only)",
-                "compare":     "⊞  Compare both",
+                "speculative": "⚡ Speculative",
+                "baseline": "▤ Baseline (7B only)",
+                "compare": "⊞ Live Compare",
+                "benchmark": "↗ Benchmark Compare"
             }[x],
             label_visibility="collapsed",
         )
@@ -440,102 +459,158 @@ def render_response_block(result, mode):
     if mode == "speculative":
         ar     = result.get("acceptance_rate") or 0
         cycles = result.get("cycles") or "—"
-        st.markdown(f"""
-        <div class="resp-head">
-            <div class="rh-dot"></div>
-            <span class="rh-tag">SPECULATIVE · 0.5B + 7B</span>
-            <span class="rh-meta">· {cycles} cycles · {ar*100:.1f}% accepted</span>
-        </div>
-        <div class="resp-box">{result['response']}</div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="resp-head"><div class="rh-dot"></div>'
+            f'<span class="rh-tag">SPECULATIVE · 0.5B + 7B</span>'
+            f'<span class="rh-meta">· {cycles} cycles · {ar*100:.1f}% accepted</span></div>'
+            f'<div class="resp-box">{html.escape(result["response"])}</div>',
+            unsafe_allow_html=True,
+        )
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("TOK / SEC", f"{result['tokens_per_sec']:.2f}")
         c2.metric("LATENCY",   f"{result['latency']:.1f}s")
         c3.metric("ACCEPT",    f"{ar*100:.1f}%")
         c4.metric("CYCLES",    str(cycles))
     else:
-        st.markdown(f"""
-        <div class="resp-head">
-            <div class="rh-dot-base"></div>
-            <span class="rh-tag-base">BASELINE · 7B ONLY</span>
-        </div>
-        <div class="resp-box-base">{result['response']}</div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="resp-head"><div class="rh-dot-base"></div>'
+            f'<span class="rh-tag-base">BASELINE · 7B ONLY</span></div>'
+            f'<div class="resp-box-base">{html.escape(result["response"])}</div>',
+            unsafe_allow_html=True,
+        )
         c1, c2, c3 = st.columns(3)
         c1.metric("TOK / SEC", f"{result['tokens_per_sec']:.2f}")
         c2.metric("LATENCY",   f"{result['latency']:.1f}s")
-        c3.metric("TOKENS",    str(result['tokens_generated']))
+        c3.metric("TOKENS",    str(result.get('tokens_generated', '—')))
 
 
-def render_compare_block(spec, base):
+def render_compare_block(spec, base, benchmark=False):
     """
-    Compare mode — side by side with the delta bar below.
-    ThreadPoolExecutor already ran before this is called;
-    we just render the two results here.
-    The delta bar auto-explains when baseline wins (short prompt note).
+    Compare mode renderer.
+
+    benchmark=False
+        -> Live Compare (parallel requests)
+
+    benchmark=True
+        -> Benchmark Compare (sequential execution)
     """
-    col1, col2 = st.columns(2, gap="large")
-    spec_tps  = spec.get("tokens_per_sec", 0)
-    base_tps  = base.get("tokens_per_sec", 0)
+
+    # ── Banner ───────────────────────────────────────────
+    if benchmark:
+        st.info(
+            "📊 Benchmark Mode: Baseline and Speculative were executed sequentially "
+            "to eliminate GPU contention and provide accurate measurements."
+        )
+    else:
+        st.warning(
+            "⚡ Live Compare: Both requests executed simultaneously. "
+            "Results may be influenced by GPU resource contention."
+        )
+
+    # ── Core Metrics ─────────────────────────────────────
+    spec_tps = spec.get("tokens_per_sec", 0)
+    base_tps = base.get("tokens_per_sec", 0)
+
+    spec_lat = spec.get("latency", 0)
+    base_lat = base.get("latency", 0)
+
     spec_wins = spec_tps > base_tps
 
+    if benchmark:
+        winner = (
+            "speculative (benchmark)"
+            if spec_wins
+            else "baseline (benchmark)"
+        )
+    else:
+        winner = (
+            "speculative (live)"
+            if spec_wins
+            else "baseline (live)"
+        )
+
+    # ── Responses ────────────────────────────────────────
+    col1, col2 = st.columns(2, gap="large")
+
     with col1:
-        ar     = spec.get("acceptance_rate") or 0
+        ar = spec.get("acceptance_rate") or 0
         cycles = spec.get("cycles") or "—"
+
         trophy = " · winner" if spec_wins else ""
-        st.markdown(f"""
-        <div class="resp-head">
-            <div class="rh-dot"></div>
-            <span class="rh-tag">SPECULATIVE · 0.5B + 7B{trophy}</span>
-            <span class="rh-meta">· {cycles} cycles</span>
-        </div>
-        <div class="resp-box">{spec['response']}</div>
-        """, unsafe_allow_html=True)
+
+        st.markdown(
+            f'<div class="resp-head"><div class="rh-dot"></div>'
+            f'<span class="rh-tag">SPECULATIVE · 0.5B + 7B{trophy}</span>'
+            f'<span class="rh-meta">· {cycles} cycles</span></div>'
+            f'<div class="resp-box">{html.escape(spec["response"])}</div>',
+            unsafe_allow_html=True,
+        )
+
         c1, c2, c3 = st.columns(3)
-        c1.metric("TOK / SEC", f"{spec_tps:.2f}", delta=f"{spec_tps - base_tps:+.2f}")
-        c2.metric("ACCEPT",    f"{ar*100:.1f}%")
-        c3.metric("CYCLES",    str(cycles))
+
+        c1.metric(
+            "TOK / SEC",
+            f"{spec_tps:.2f}",
+            delta=f"{spec_tps - base_tps:+.2f}"
+        )
+
+        c2.metric(
+            "ACCEPT",
+            f"{ar*100:.1f}%"
+        )
+
+        c3.metric(
+            "CYCLES",
+            str(cycles)
+        )
 
     with col2:
-        trophy = " · winner" if not spec_wins else ""
-        st.markdown(f"""
-        <div class="resp-head">
-            <div class="rh-dot-base"></div>
-            <span class="rh-tag-base">BASELINE · 7B ONLY{trophy}</span>
-        </div>
-        <div class="resp-box-base">{base['response']}</div>
-        """, unsafe_allow_html=True)
-        c1, c2, c3 = st.columns(3)
-        c1.metric("TOK / SEC", f"{base_tps:.2f}", delta=f"{base_tps - spec_tps:+.2f}")
-        c2.metric("LATENCY",   f"{base.get('latency', 0):.1f}s")
-        c3.metric("TOKENS",    str(base.get("tokens_generated", "—")))
 
-    # Delta bar
-    tps_d    = spec_tps - base_tps
-    lat_d    = (spec.get("latency", 0)) - (base.get("latency", 0))
-    winner   = "speculative" if spec_wins else "baseline"
-    tps_cls  = "cb-pos" if tps_d >= 0 else "cb-neg"
-    lat_cls  = "cb-neg" if lat_d > 0 else "cb-pos"
+        trophy = " · winner" if not spec_wins else ""
+
+        st.markdown(
+            f'<div class="resp-head"><div class="rh-dot-base"></div>'
+            f'<span class="rh-tag-base">BASELINE · 7B ONLY{trophy}</span></div>'
+            f'<div class="resp-box-base">{html.escape(base["response"])}</div>',
+            unsafe_allow_html=True,
+        )
+
+        c1, c2, c3 = st.columns(3)
+
+        c1.metric(
+            "TOK / SEC",
+            f"{base_tps:.2f}",
+            delta=f"{base_tps - spec_tps:+.2f}"
+        )
+
+        c2.metric(
+            "LATENCY",
+            f"{base_lat:.1f}s"
+        )
+
+        c3.metric(
+            "TOKENS",
+            str(base.get("tokens_generated", "—"))
+        )
+
+    # ── Delta Summary Bar ────────────────────────────────
+    tps_d = spec_tps - base_tps
+    lat_d = spec_lat - base_lat
+
+    tps_cls = "cb-pos" if tps_d >= 0 else "cb-neg"
+    lat_cls = "cb-neg" if lat_d > 0 else "cb-pos"
+
     tps_sign = "+" if tps_d >= 0 else ""
     lat_sign = "+" if lat_d >= 0 else ""
 
-    st.markdown(f"""
-    <div class="compare-bar">
-        <div class="cb-cell">
-            <div class="cb-l">Δ throughput</div>
-            <div class="{tps_cls}">{tps_sign}{tps_d:.2f} tok/s</div>
-        </div>
-        <div class="cb-cell">
-            <div class="cb-l">Δ latency</div>
-            <div class="{lat_cls}">{lat_sign}{lat_d:.2f}s</div>
-        </div>
-        <div class="cb-cell">
-            <div class="cb-l">winner</div>
-            <div class="cb-neu">{winner}</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
+    st.markdown(
+        f'<div class="compare-bar">'
+        f'<div class="cb-cell"><div class="cb-l">&#916; throughput</div><div class="{tps_cls}">{tps_sign}{tps_d:.2f} tok/s</div></div>'
+        f'<div class="cb-cell"><div class="cb-l">&#916; latency</div><div class="{lat_cls}">{lat_sign}{lat_d:.2f}s</div></div>'
+        f'<div class="cb-cell"><div class="cb-l">winner</div><div class="cb-neu">{winner}</div></div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
 # ── Generate tab ──────────────────────────────────────────────────────────────
 def render_generate_tab(mode, domain, max_tokens):
@@ -579,11 +654,13 @@ def render_generate_tab(mode, domain, max_tokens):
         run = st.button("generate ⚡", use_container_width=True, type="primary")
     with col_tip:
         if mode == "compare":
-            st.caption("fires speculative + baseline in parallel · ThreadPoolExecutor")
+            st.caption("Speculative + Baseline · Both models run parallely")
         elif mode == "speculative":
-            st.caption("draft: Qwen2.5-0.5B  ·  target: Qwen2.5-7B  ·  k=4")
+            st.caption("Draft: Qwen2.5-0.5B  ·  Target: Qwen2.5-7B")
+        elif mode == "benchmark":
+            st.caption("Benchmark comparison · Both models run sequentially")
         else:
-            st.caption("target only: Qwen2.5-7B  ·  standard autoregressive")
+            st.caption("Target only: Qwen2.5-7B")
 
     if run and not prompt_raw.strip():
         st.warning("enter a prompt first.")
@@ -610,7 +687,36 @@ def render_generate_tab(mode, domain, max_tokens):
             if "error" in base:
                 st.error(f"baseline error: {base['error']}")
                 return
-            render_compare_block(spec, base)
+            render_compare_block(spec, base, benchmark=False)
+
+
+        elif mode == "benchmark":
+
+            with st.spinner("Running baseline benchmark..."):
+                base = call_generate(
+                    url,
+                    full_prompt,
+                    "baseline",
+                    max_tokens
+                )
+
+            if "error" in base:
+                st.error(base["error"])
+                return
+
+            with st.spinner("Running speculative benchmark..."):
+                spec = call_generate(
+                    url,
+                    full_prompt,
+                    "speculative",
+                    max_tokens
+                )
+
+            if "error" in spec:
+                st.error(spec["error"])
+                return
+
+            render_compare_block(spec, base, benchmark=True)
 
         else:
             spinner_msg = (
@@ -639,6 +745,9 @@ def main():
             <span style="color:#5b9eff;font-size:1rem;font-weight:500"> AI</span>
         </div>
         <div class="logo-sub">Speculative decoding inference engine · Qwen2.5 0.5B draft + 7B target</div>
+    </div>
+    <div class="sidebar-nudge">
+        ← open sidebar to set backend URL, mode &amp; domain
     </div>
     """, unsafe_allow_html=True)
 
