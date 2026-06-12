@@ -118,6 +118,22 @@ curl -X POST https://your-url/generate \
 
 ---
 
+## Demo
+
+### UI
+![SpecDecode UI](metrics/screenshots/SpecDecode1.png)
+
+### Live Inference — Speculative Mode
+![Speculative output with metrics](metrics/screenshots/SpecDecode2.png)
+
+> **SPECULATIVE · 0.5B + 7B** · 99 cycles · 51.0% accepted · 7.51 tok/s
+> Mode: Tech · DSA/CS · 300 max tokens
+
+### Full Response View
+![Full response scrolled](metrics/screenshots/SpecDecode3.png)
+
+---
+
 ## V2 Roadmap
 
 - [ ] Swap draft to Qwen2.5-1.5B for higher acceptance rates on non-English prompts
