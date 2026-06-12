@@ -130,7 +130,7 @@ curl -X POST https://your-url/generate \
 > Mode: Tech · DSA/CS · 300 max tokens
 
 ### Full Response View
-![Full response scrolled](metrics/screenshots/SpecDecode3.png)
+![Full response scrolled](metrics/screenshots/SpecDecode3.jpeg)
 
 ---
 
